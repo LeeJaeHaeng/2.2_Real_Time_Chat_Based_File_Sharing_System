@@ -1,0 +1,187 @@
+@startuml
+class com.chat.server.ClientHandler {
+- Socket socket
+- ChatServer server
+- BufferedReader reader
+- PrintWriter writer
+- String username
+- ChatRoom currentRoom
+- boolean isRunning
++ void run()
+- void joinRoom(String)
+- void leaveRoom()
+- void broadcastParticipants()
+- void cleanup()
+- void sendRoomList()
++ void sendMessage(String)
++ String getUsername()
++ boolean isConnected()
+}
+
+
+class com.chat.server.ChatServer {
+- ServerSocket serverSocket
+- Map<String,ChatRoom> chatRooms
+- List<ClientHandler> clients
+- ExecutorService executorService
++ void start()
++ void createRoom(String)
++ void removeRoom(String)
++ void forceDeleteRoom(String)
+- void broadcastRoomList()
++ Set<String> getRoomList()
++ ChatRoom getRoom(String)
++ void removeClient(ClientHandler)
++ void shutdown()
+}
+
+
+class com.chat.server.ChatClient {
+- JPanel chatPanel
+- JScrollPane scrollPane
+- JTextField messageField
+- Socket socket
+- PrintWriter writer
+- BufferedReader reader
+- String username
+- String roomName
+- String SERVER_IP
+- int SERVER_PORT
+- SimpleDateFormat timeFormat
+- Color myMessageColor
+- Color kakaoBackground
+- boolean isRunning
+- JLabel participantsLabel
+- List<String> participants
+- void setupGUI()
+- JPanel createHeaderPanel()
+- void showUserListDialog()
+- JPanel createInputPanel()
+- void showDeleteDialog()
+- void updateParticipantsLabel()
+- void addParticipant(String)
+- void removeParticipant(String)
+- void connectToServer()
+- void loadChatHistory()
+- void handleClosing()
+- void closeConnection()
+- void addMessage(String,String,String,boolean)
+- void scrollToBottom()
+- void sendMessage()
+- void receiveMessages()
+- void processMessage(String)
+}
+
+
+class com.chat.server.main {
++ {static} void main(String[])
+- {static} void startChatServer()
+}
+
+class com.chat.server.ChatMessage {
+- String sender
+- String message
+- Timestamp timestamp
+- boolean isSystemMessage
++ String getSender()
++ String getMessage()
++ Timestamp getTimestamp()
++ boolean isSystemMessage()
+}
+
+
+class com.chat.server.ChatRoomListFrame {
+- JPanel roomListPanel
+- String username
+- Socket socket
+- PrintWriter writer
+- BufferedReader reader
+- String SERVER_IP
+- int SERVER_PORT
+- boolean isRunning
+- List<ChatRoomInfo> chatRooms
+- void setupGUI()
+- JPanel createHeaderPanel()
+- void styleButton(JButton)
+- JPopupMenu createPopupMenu()
+- void showCreateRoomDialog()
+- void connectToServer()
+- void closeConnection()
+- void handleLogout()
+- void refreshRoomList()
+- void addChatRoom(ChatRoomInfo)
+- void receiveMessages()
+- void updateRoomList(String)
+- void openChatRoom(ChatRoomInfo)
+}
+
+
+class com.chat.server.ChatRoomListFrame$ChatRoomInfo {
+- String name
+- String lastMessage
+- String lastMessageTime
++ String getName()
++ String getLastMessage()
++ String getLastMessageTime()
+}
+
+
+class com.chat.server.DatabaseManager {
+- {static} String URL
+- {static} String USER
+- {static} String PASSWORD
++ {static} void initializeDatabase()
++ {static} Connection getConnection()
++ {static} boolean validateUser(String,String)
++ {static} boolean registerUser(String,String)
++ {static} boolean userExists(String)
++ {static} void saveMessage(String,String,String,boolean)
++ {static} List<ChatMessage> loadChatHistory(String)
++ {static} boolean createChatRoom(String)
++ {static} boolean deleteChatRoom(String)
++ {static} void deleteRoomMessages(String)
++ {static} List<String> getChatRooms()
+}
+
+
+class com.chat.server.ChatRoom {
+- String name
+- Set<ClientHandler> clients
+- boolean hasMessages
++ String getName()
++ void addClient(ClientHandler)
++ void removeClient(ClientHandler)
++ Set<ClientHandler> getClients()
++ void broadcast(String,ClientHandler)
++ boolean isEmpty()
++ boolean canBeDeleted()
+}
+
+
+class com.chat.server.RegisterDialog {
+- JTextField usernameField
+- JPasswordField passwordField
+- JPasswordField confirmPasswordField
+- void setupGUI()
+- void handleRegister()
+}
+
+
+class com.chat.server.LoginFrame {
+- JTextField usernameField
+- JPasswordField passwordField
+- void setupGUI()
+- void handleLogin()
+- void showRegisterDialog()
+}
+
+
+
+
+com.chat.server.Runnable <|.. com.chat.server.ClientHandler
+com.chat.server.JFrame <|-- com.chat.server.ChatClient
+com.chat.server.JFrame <|-- com.chat.server.ChatRoomListFrame
+com.chat.server.ChatRoomListFrame +.. com.chat.server.ChatRoomListFrame$ChatRoomInfo
+com.chat.server.JDialog <|-- com.chat.server.RegisterDialog
+com.chat.server.JFrame <|-- com.chat.server.LoginFrame
+@enduml
